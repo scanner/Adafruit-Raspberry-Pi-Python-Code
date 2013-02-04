@@ -16,49 +16,6 @@ import time
 #
 from Adafruit_I2C import Adafruit_I2C
 
-# address = 0x39 ## Device address
-# control_on = 0x03 ## "On" value
-# control_off = 0x00 ## "Off" value
-
-# i2c = Adafruit_I2C(address)
-
-# def enable():
-#    print "enabling"
-#    i2c.write8(0x00, control_on) ##Writes on value to control register
-
-# def disable():
-#    print "disabling"
-#    i2c.write8(control, control_off) ##Writes off value to control register
-
-# def getLight():
-#    Channel0 = i2c.readU16(0x8C) ## Read total light (from channel 0)
-#    Channel1 = i2c.readU8(0x8E) ## Read infrared light (from channel 1)
-#    return Channel0, Channel1
-
-# enable()
-# print getLight()
-
-
-# #!/usr/bin/env python
-# #
-# # File: $Id$
-# #
-# """
-# Demo code to read the Adafruit TLS2561 breakout over the i2c bus on a
-# Raspberry Pi
-# """
-
-# # system imports
-# #
-# import time
-# from datetime import datetime
-
-# # 3rd party imports
-# #
-# from Adafruit_I2C import Adafruit_I2C
-
-
-
 ##################################################################
 ##################################################################
 #
