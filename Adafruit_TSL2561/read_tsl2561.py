@@ -126,8 +126,12 @@ class TSL2561(object):
     INTEG_TIME_101MS     = 0x01    # 101ms
     INTEG_TIME_402MS     = 0x02    # 402ms
 
-    GAIN_0X         = 0x00    # No gain
+    VALID_INTEG_TIMES = (INTEG_TIME_13MS, INTEG_TIME_101MS, INTEG_TIME_402MS)
+
+    GAIN_0X          = 0x00    # No gain
     GAIN_16X         = 0x10    # 16x gain
+
+    VALID_GAINS = (GAIN_0X, GAIN_16X)
 
     ##################################################################
     #
@@ -284,14 +288,17 @@ class TSL2561(object):
 
     ##################################################################
     #
-    def set_timing(self, integration):
+    def set_timing(self, integration = None):
         """
+        Update the integration value as supplied in the argument. If the
+        'integration' argument is not supplied, use the already set value.
 
         Arguments:
         - `integration`:
         """
         self.enable()
-        self.integration = integration
+        if integration is not None:
+            self.integration = integration
         self.i2c.write8(self.COMMAND_BIT | self.REG_TIMING,
                         self.integration | self.gain)
         self.disable()
@@ -299,17 +306,38 @@ class TSL2561(object):
 
     ##################################################################
     #
-    def set_gain(self, gain):
+    def set_gain(self, gain = None):
         """
+        Update the gain value as supplied in the argument. If the
+        'gain' argument is not supplied, use the already set value.
+
         Arguments:
         - `gain`:
         """
         self.enable()
-        self.gain = gain
+        if gain is not None:
+            self.gain = gain
+        elif gain not in self.VALID_GAINS:
+            raise ValueError("%d is not a valid gain (%s)" % \
+                             (gain, repr(self.VALID_GAINS)))
+
         self.i2c.write8(self.COMMAND_BIT | self.REG_TIMING,
                         self.integration | self.gain)
         self.disable()
         return
+
+    ##################################################################
+    #
+    def get_id(self):
+        """
+        Read the part number and silicon revision number for this device.
+        It returns a tuple of (part number, revision number)
+        """
+        self.enable()
+        id = self.i2c.readU8(self.COMMAND_BIT | self.REG_ID)
+        self.disable()
+        print "id is: %d, binary: %s" % (id,bin(id))
+        return ((id & 0xf0) >> 4, (id & 0x0f))
 
     ##################################################################
     #
@@ -351,6 +379,8 @@ def main():
 
     tsl2561 = TSL2561(TSL2561.ADDR_FLOAT)
     # tsl2561.set_timing(TSL2561.INTEG_TIME_101MS)
+    part_number, revision = tsl2561.get_id()
+    print "TSL2561 part number: %d, revision: %d" % (part_number, revision)
     while True:
         full_spectrum, ir = tsl2561.get_luminosity()
         print "\n*******"
